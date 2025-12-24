@@ -105,11 +105,12 @@ in
   programs.zsh.enable = true; # wichtig auch wenn zsh via HM konfiguriert wird (vendor completions) :contentReference[oaicite:2]{index=2}
 
   # --- Home Manager Einbindung ---
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    users.ms = import ./home.nix;
-  };
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+
+  home-manager.users.ms = import ./home.nix;
+
+
   environment.shells = with pkgs; [ zsh ];
   system.stateVersion = "25.11";
 }
