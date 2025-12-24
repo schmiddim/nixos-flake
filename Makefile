@@ -1,4 +1,4 @@
-FLAKE ?= .#ms-nixos
+FLAKE ?= .\#ms-nixos
 .PHONY: switch update
 
 # Rebuild the system from the local flake.
