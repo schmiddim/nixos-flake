@@ -42,7 +42,7 @@
     usbutils
     thunderbird
     google-chrome
-    jetbrains.idea-ultimate
+    jetbrains.idea
     freecad
     gimp
     go
@@ -73,7 +73,7 @@
     jack.enable = true;
     wireplumber.enable = true;
   };
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 
   security.polkit.enable = true;
   services.dbus.enable = true;
@@ -85,12 +85,13 @@
     enable = true;
     wlr.enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    config.common.default = "*";
   };
 
   services.greetd = {
     enable = true;
     settings.default_session = {
-      command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd sway";
+      command = "${pkgs.tuigreet}/bin/tuigreet --cmd sway";
       user = "greeter";
     };
   };
@@ -110,7 +111,7 @@
     XDG_CURRENT_DESKTOP = "sway";
   };
 
-  hardware.opengl.enable = true;
+  hardware.graphics.enable = true;
 
   fonts.packages = with pkgs; [
     noto-fonts
