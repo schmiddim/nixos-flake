@@ -89,7 +89,14 @@ in
     jetbrains.idea
     freecad gimp
 
-    go gotools gh kubectl k9s
+    go
+    gotools
+    gh
+    kubectl
+    k9s
+
+
+    alacritty
   ];
 
   # --- Home Manager Einbindung ---
