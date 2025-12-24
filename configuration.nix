@@ -1,129 +1,93 @@
 { config, pkgs, ... }:
-{
-  imports = [ ];
 
+let
+  # Home Manager als NixOS-Modul (laut Wiki-Template)
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
+in
+{
+  imports = [
+    (import "${home-manager}/nixos")
+    ./hardware-configuration.nix
+  ];
+
+  # --- Basics ---
   nixpkgs.config.allowUnfree = true;
 
-  nix = {
-    settings = {
-      experimental-features = [ "nix-command" "flakes" ];
-      auto-optimise-store = true;
-    };
-  };
-
-  networking.hostName = "ms-nixos";
   networking.networkmanager.enable = true;
-
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
   time.timeZone = "Europe/Berlin";
   i18n.defaultLocale = "de_DE.UTF-8";
 
-  console = {
-    keyMap = "de";
-  };
+  # Für Sway via Home Manager: Polkit muss an sein
+  security.polkit.enable = true; # required per Sway wiki :contentReference[oaicite:1]{index=1}
 
-  users.users.ms = {
-    isNormalUser = true;
-    description = "ms";
-    extraGroups = [ "wheel" "networkmanager" "video" "seat" ];
-    initialPassword = "changeme";
-    home = "/home/ms";
-  };
+  # Optional, aber in der Praxis oft nötig (GTK themes, portals etc.)
+  programs.dconf.enable = true; # HM wiki FAQ hint :contentReference[oaicite:2]{index=2}
 
-  environment.systemPackages = with pkgs; [
-    vim
-    wget
-    htop
-    git
-    gnumake
-    gcc
-    usbutils
-    thunderbird
-    google-chrome
-    jetbrains.idea-ultimate
-    freecad
-    gimp
-    go
-    gotools
-    gh
-    kubectl
-    k9s
+  # Wayland portals (wichtig für Screensharing/xdg-desktop-portal unter Sway)
+  xdg.portal.enable = true;
+  xdg.portal.wlr.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
-    sway
-    swaylock
-    swayidle
-    waybar
-    foot
-    bemenu
-    grim
-    slurp
-    wl-clipboard
-    wtype
-    mako
-  ];
+  # --- Sway (System-Seite) ---
+  programs.sway.enable = true;
+  programs.sway.wrapperFeatures.gtk = true;
 
-  services.printing.enable = true;
-
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
-    jack.enable = true;
-    wireplumber.enable = true;
-  };
-  hardware.pulseaudio.enable = false;
-
-  security.polkit.enable = true;
-  services.dbus.enable = true;
-  programs.dconf.enable = true;
-
-  services.seatd.enable = true;
-
-  programs.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
-  };
-
-  xdg.portal = {
-    enable = true;
-    wlr.enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-  };
-
+  # Greeter (laut Sway wiki: greetd + tuigreet ist straightforward)
   services.greetd = {
     enable = true;
-    settings.default_session = {
-      command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd sway";
-      user = "greeter";
+    settings = {
+      default_session = {
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd sway";
+        user = "greeter";
+      };
     };
-  };
+  }; # :contentReference[oaicite:3]{index=3}
 
+  # Sound (einfacher Default)
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+  };
+  security.rtkit.enable = true;
+
+  # --- k3s ---
   services.k3s = {
     enable = true;
     role = "server";
-    extraFlags = [
-      "--write-kubeconfig-mode=644"
-      "--disable=traefik"
-    ];
+    # damit dein User kubectl ohne sudo nutzen kann:
+    extraFlags = [ "--write-kubeconfig-mode=644" ];
+  };
+  networking.firewall.allowedTCPPorts = [ 6443 ];
+  networking.firewall.allowedUDPPorts = [ 8472 ]; # flannel vxlan (häufig nötig)
+
+  # KUBECONFIG global verfügbar machen (du wolltest /etc/rancher/k3s/k3s.yaml)
+  environment.sessionVariables.KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
+
+  # --- User (bitte anpassen) ---
+  users.users.ms = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "networkmanager" ];
   };
 
-  environment.sessionVariables = {
-    MOZ_ENABLE_WAYLAND = "1";
-    QT_QPA_PLATFORM = "wayland";
-    XDG_CURRENT_DESKTOP = "sway";
-  };
+  # --- Pakete (Systemweit) ---
+  environment.systemPackages = with pkgs; [
+    vim wget htop git gnumake gcc usbutils
+    thunderbird
+    google-chrome
+    jetbrains.idea-ultimate
+    freecad gimp
 
-  hardware.opengl.enable = true;
-
-  fonts.packages = with pkgs; [
-    noto-fonts
-    noto-fonts-emoji
-    font-awesome
+    go gotools gh kubectl k9s
   ];
 
-  services.openssh.enable = true;
+  # --- Home Manager Einbindung ---
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.ms = import ./home.nix;
+  };
 
-  system.stateVersion = "24.05";
+  system.stateVersion = "25.11";
 }
