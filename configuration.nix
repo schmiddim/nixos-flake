@@ -72,6 +72,8 @@ in
   # --- User (bitte anpassen) ---
   users.users.ms = {
     isNormalUser = true;
+    shell = pkgs.zsh; # Zsh als Login-Shell (Wiki Beispiel) :contentReference[oaicite:3]{index=3}
+
     extraGroups = [ "wheel" "networkmanager" ];
   };
 
@@ -99,12 +101,15 @@ in
     alacritty
   ];
 
+
+  programs.zsh.enable = true; # wichtig auch wenn zsh via HM konfiguriert wird (vendor completions) :contentReference[oaicite:2]{index=2}
+
   # --- Home Manager Einbindung ---
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     users.ms = import ./home.nix;
   };
-
+  environment.shells = with pkgs; [ zsh ];
   system.stateVersion = "25.11";
 }

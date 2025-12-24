@@ -64,58 +64,41 @@ home.sessionPath = [
   # -----------------------------
   # Zsh als Login- & User-Shell
   # -----------------------------
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
+   programs.zsh = {
+      enable = true;
+      enableCompletion = true;                 # Wiki (HM Beispiel) :contentReference[oaicite:6]{index=6}
+      autosuggestion.enable = true;            # Wiki (HM Beispiel) :contentReference[oaicite:7]{index=7}
+      syntaxHighlighting.enable = true;        # Wiki (HM Beispiel) :contentReference[oaicite:8]{index=8}
 
-    history = {
-      size = 10000;
-      save = 10000;
-      path = "${config.home.homeDirectory}/.zsh_history";
-      share = true;
-      ignoreAllDups = true;
+      shellAliases = {                         # Wiki (HM Beispiel) :contentReference[oaicite:9]{index=9}
+        ll = "ls -l";
+        edit = "sudo -e";
+        update = "sudo nixos-rebuild switch";
+
+        # deine praktischen extras:
+        k = "kubectl";
+        k9 = "k9s";
+        gs = "git status";
+      };
+
+      history = {                              # Wiki (HM Beispiel) :contentReference[oaicite:10]{index=10}
+        size = 10000;
+        ignoreAllDups = true;
+        path = "${config.home.homeDirectory}/.zsh_history";
+        ignorePatterns = [ "rm *" "pkill *" "cp *" ];
+      };
+
+      initExtra = ''
+        # Go + PATH (robust, ohne "$HOME" literal)
+        export GOPATH="${config.home.homeDirectory}/go"
+        export GOBIN="$GOPATH/bin"
+        export PATH="$GOBIN:$PATH"
+
+        # k3s kubeconfig
+        export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
+      '';
     };
 
-    shellAliases = {
-      ll = "ls -lah";
-      k = "kubectl";
-      kgp = "kubectl get pods";
-      kgs = "kubectl get svc";
-      kctx = "kubectl config get-contexts";
-      kctxu = "kubectl config use-context";
-      gs = "git status";
-      gl = "git log --oneline --graph --decorate";
-    };
-
-    initExtra = ''
-      # ---------
-      # Go
-      # ---------
-      export GOPATH="${config.home.homeDirectory}/go"
-      export GOBIN="$GOPATH/bin"
-      export PATH="$GOBIN:$PATH"
-
-      # ---------
-      # Kubernetes
-      # ---------
-      export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-
-      # ---------
-      # Prompt
-      # ---------
-      setopt PROMPT_SUBST
-      PROMPT='%F{cyan}%n@%m%f:%F{yellow}%~%f %# '
-
-      # ---------
-      # Quality of life
-      # ---------
-      setopt AUTO_CD
-      setopt EXTENDED_GLOB
-      setopt HIST_IGNORE_SPACE
-    '';
-  };
 
   # Zsh als Default-Shell für HM-Sessions
   home.sessionVariables.SHELL = "${pkgs.zsh}/bin/zsh";
