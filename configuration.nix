@@ -76,10 +76,16 @@ in
 
   # --- Pakete (Systemweit) ---
   environment.systemPackages = with pkgs; [
-    vim wget htop git gnumake gcc usbutils
+    vim
+    wget
+    htop
+    git
+    gnumake
+    gcc
+    usbutils
     thunderbird
     google-chrome
-    jetbrains.idea-ultimate
+    jetbrains.idea
     freecad gimp
 
     go gotools gh kubectl k9s
