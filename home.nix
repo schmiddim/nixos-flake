@@ -6,16 +6,15 @@
   home.stateVersion = "25.11";
 
   # Deine gewünschten Variablen (Home-Session)
-  home.sessionVariables = {
-    GOPATH = "$HOME/go";
-    GOBIN = "$HOME/go/bin";
-    KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
-  };
+home.sessionVariables = {
+  GOPATH = "${config.home.homeDirectory}/go";
+  GOBIN = "${config.home.homeDirectory}/go/bin";
+  KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
+};
 
-  # PATH erweitern (sauber über HM)
-  home.sessionPath = [
-    "$HOME/go/bin"
-  ];
+home.sessionPath = [
+  "${config.home.homeDirectory}/go/bin"
+];
 
   # Sway via Home Manager
   wayland.windowManager.sway = {
