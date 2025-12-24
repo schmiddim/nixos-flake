@@ -81,11 +81,6 @@
 
   services.seatd.enable = true;
 
-  programs.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
-  };
-
   xdg.portal = {
     enable = true;
     wlr.enable = true;
@@ -126,4 +121,5 @@
   services.openssh.enable = true;
 
   system.stateVersion = "25.11";
+
 }

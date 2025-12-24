@@ -53,10 +53,6 @@
 
   programs.swaylock.enable = true;
 
-  programs.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
-  };
 
   wayland.windowManager.sway = {
     enable = true;
