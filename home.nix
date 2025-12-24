@@ -4,7 +4,7 @@
   home.username = "ms";              # <- anpassen
   home.homeDirectory = "/home/ms";   # <- anpassen
   home.stateVersion = "25.11";
-  home.backupFileExtension = "backup";
+
 
   # Deine gewünschten Variablen (Home-Session)
 home.sessionVariables = {
